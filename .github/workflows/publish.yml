@@ -1,0 +1,70 @@
+name: Publish NuGet
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+jobs:
+  publish:
+    name: Pack & Publish
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build (Release)
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Run unit tests before publish
+        run: dotnet test --no-build --configuration Release --filter "Category!=Integration"
+
+      - name: Pack
+        run: >
+          dotnet pack src/EricksonLopez.DapperExtensions.PostgreSQL/EricksonLopez.DapperExtensions.PostgreSQL.csproj
+          --no-build
+          --configuration Release
+          --output ./nupkgs
+          -p:VersionPrefix=${{ steps.version.outputs.VERSION }}
+
+      - name: NuGet login
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ericksonlopezf
+
+      - name: Push to NuGet.org
+        run: >
+          dotnet nuget push ./nupkgs/*.nupkg
+          --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Release ${{ github.ref_name }}"
+          body: |
+            See [CHANGELOG.md](https://github.com/ericksonlopezf/dapper-extensions-pg/blob/main/CHANGELOG.md) for details.
+          files: ./nupkgs/*.nupkg
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}

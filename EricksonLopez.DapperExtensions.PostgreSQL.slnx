@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/EricksonLopez.DapperExtensions.PostgreSQL.Benchmarks/EricksonLopez.DapperExtensions.PostgreSQL.Benchmarks.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/EricksonLopez.DapperExtensions.PostgreSQL/EricksonLopez.DapperExtensions.PostgreSQL.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EricksonLopez.DapperExtensions.PostgreSQL.Tests/EricksonLopez.DapperExtensions.PostgreSQL.Tests.csproj" />
+  </Folder>
+</Solution>
