@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="!Exists('..\..\..\dotnet-shared-kernel\src\EricksonLopez.SharedKernel\EricksonLopez.SharedKernel.csproj')">
-    <PackageReference Include="EricksonLopez.SharedKernel" Version="1.0.0" />
+    <PackageReference Include="EricksonLopez.SharedKernel" Version="2.0.0" />
   </ItemGroup>
 
 </Project>
